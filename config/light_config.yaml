@@ -1,0 +1,4 @@
+dataset:
+  dataset_root_path: '../../dataset/NTHUSCDet/COCO_like/NTHUSCDet_square_light'
+dataloader_config:
+  num_workers: 4

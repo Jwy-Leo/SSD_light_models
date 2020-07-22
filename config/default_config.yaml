@@ -1,0 +1,4 @@
+dataset:
+  dataset_root_path: '../COCO_like_ln/<dataset-name>'
+dataloader_config:
+  num_workers: 4
