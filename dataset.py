@@ -14,10 +14,9 @@ def test():
     imgs, anno, labels = dataset[0]
     for _anno in anno:
         _anno = _anno.astype(int)
-        cv2.rectangle(imgs, (_anno[1],_anno[0]),( _anno[1]+ _anno[3], _anno[0]+_anno[2]), (0,0,255),1)
+        cv2.rectangle(imgs, (_anno[0],_anno[1]),( _anno[0]+ _anno[2], _anno[1]+_anno[3]), (0,0,255),1)
     cv2.imshow('aa', imgs)
     cv2.waitKey()
-    import pdb;pdb.set_trace()
 
 
 class COCO_like_object_detection_dataset(torch.utils.data.Dataset):
@@ -33,17 +32,16 @@ class COCO_like_object_detection_dataset(torch.utils.data.Dataset):
         self._classes_name = ['Background']
         for sc, _id, name in cocotool.loadCats(cocotool.getCatIds()):
             self._classes_name.append(name)
-        img_ids = cocotool.getImgIds()
-        self.meta_files = cocotool.loadImgs(img_ids)
 
+        img_ids = cocotool.getImgIds()
+
+        self.meta_files = cocotool.loadImgs(img_ids)
         self.anno_files = []
         for img_index in img_ids:
             anno_ids = cocotool.getAnnIds(imgIds=img_index)
             temp_object_detection_infos = cocotool.loadAnns(anno_ids)
-            import pdb;pdb.set_trace()
-            ddd, ppp = self._Parsing_from_dict_to_np(temp_object_detection_infos)
-            # import pdb;pdb.set_trace()
-            self.anno_files.append((ddd, ppp))
+            boxes, labels = self._Parsing_from_dict_to_np(temp_object_detection_infos)
+            self.anno_files.append((boxes, labels))
     
     def __getitem__(self, index):
 
@@ -52,13 +50,7 @@ class COCO_like_object_detection_dataset(torch.utils.data.Dataset):
         img = cv2.imread(img_path)
 
         bboxes, labels = self.anno_files[index]
-        # _anno = self.anno_files[index]
-        # for _ann in _anno:
-        #     import pdb;pdb.set_trace()
-        #     boxes = _ann['bbox']
-        #     category_id = _ann['category_id']
-        #     boxes.append(category_id)
-        #     gts.append(boxes, category_id)
+
         if self.img_transform is not None:
             img, gts = self.img_transform(img, gts)
         if self.loc_transform is not None:
@@ -71,7 +63,7 @@ class COCO_like_object_detection_dataset(torch.utils.data.Dataset):
         Input: (dict_files, a list of dicts, using coco format)
         Output: bbox_format_anno
             (np.ndarray)
-            4 x 1, cx, cy, w, h
+            4 x 1, x, y, w, h
         '''
         bbox_format_anno = []
         id_list = []
