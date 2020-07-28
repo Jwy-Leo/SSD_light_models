@@ -8,6 +8,11 @@ def test():
 
 class VGG_SSD(nn.Module):
     def __init__(self, num_classes = 7):
+        '''
+        VGG backbone for SSD
+        The first 2 layers are belong to Backnone in feature detector
+        And the other features are additional extractor to extract more large-scale objects
+        '''
         super(VGG_SSD, self).__init__()
         
         self.num_classes = num_classes
